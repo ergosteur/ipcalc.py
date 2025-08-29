@@ -26,16 +26,17 @@ jobs:
           - os: windows-latest
             arch: x64
             name: windows-x86_64
-          - os: macos-latest
+          - os: macos-latest # This is an Intel runner
             arch: x64
             name: macos-x86_64
 
           # --- ARM64 (aarch64) ---
-          - os: ubuntu-latest
+          # FIX: Pin to Ubuntu 22.04 for stable ARM64 apt repositories
+          - os: ubuntu-22.04
             arch: arm64
             name: linux-arm64
-            debian_arch: arm64 # For installing foreign libraries
-          - os: macos-14
+            debian_arch: arm64
+          - os: macos-14 # This is an Apple Silicon runner
             arch: arm64
             name: macos-arm64
 
@@ -43,7 +44,6 @@ jobs:
           - os: windows-latest
             arch: x86
             name: windows-x86
-          # 32-bit Linux target has been removed due to lack of runner support.
 
     steps:
     - name: 1. Check out repository code
@@ -62,8 +62,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libc6:${{ matrix.target.debian_arch }}
 
-    - name: 2.2 Install gettext for dylib dependency on macOS
-      if: runner.os == 'macOS'
+    # FIX: Run brew install only on the Intel (x64) macOS runner
+    - name: 2.2 Install gettext for dylib dependency on macOS (Intel only)
+      if: runner.os == 'macOS' && matrix.target.arch == 'x64'
       run: brew install gettext
 
     - name: 3. Set up Python
