@@ -1,22 +1,9 @@
 # ipcalc.py
-Python version of [ipcalc](https://github.com/kjokjo/ipcalc).
-
-IPv4/v6 Calculator
-Converted from the original Perl script by Krischan Jodies
-Original Copyright (C) Krischan Jodies 2000 - 2021
-Python conversion by Gemini 2025
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS for A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-
-*Disclaimer: Code was converted with Gemini AI assisstance.*
+Python version of [ipcalc](https://github.com/kjokjo/ipcalc) - IPv4/v6 Calculator  
+  
+Converted from the original Perl script by Krischan Jodies  
+Original Copyright (C) Krischan Jodies 2000 - 2021  
+Python conversion by Gemini 2025  
 
 This is the ipv6 capable continuation of the subnet calculator from http://jodies.de/ipcalc. 
 
@@ -36,3 +23,16 @@ Hosts/Net: 254                   Class C, Private Internet
 Address: fde6:36fc:c985::c2c1:c0ff:fe1d:cc7f     1111110111100110:0011011011111100:1100100110000101:0000000000000000:1100001011000001:1100000011111111:1111111000011101:1100110001111111
 Netmask: 64                                      1111111111111111:1111111111111111:1111111111111111:1111111111111111:0000000000000000:0000000000000000:0000000000000000:0000000000000000
 Prefix:  fde6:36fc:c985::/64                     1111110111100110:0011011011111100:1100100110000101:0000000000000000:0000000000000000:0000000000000000:0000000000000000:0000000000000000
+</pre>
+
+This program is free software; you can redistribute it and/or modify  
+it under the terms of the GNU General Public License as published by  
+the Free Software Foundation; either version 2 of the License, or  
+(at your option) any later version.  
+
+This program is distributed in the hope that it will be useful,  
+but WITHOUT ANY WARRANTY; without even the implied warranty of  
+MERCHANTABILITY or FITNESS for A PARTICULAR PURPOSE. See the  
+GNU General Public License for more details.  
+
+*Disclaimer: Code was converted with Gemini AI assisstance.*
