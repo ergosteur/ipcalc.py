@@ -1,0 +1,92 @@
+# .github/workflows/build-binaries.yml
+
+name: Build Static Binaries
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ 'v*.*.*' ] # Also run on version tags
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  build:
+    # A name for the job, using the matrix values
+    name: ${{ matrix.target.os }}-${{ matrix.target.arch }}
+    
+    # The virtual machine to run the job on
+    runs-on: ${{ matrix.target.os }}
+
+    strategy:
+      # Don't cancel all jobs if one fails
+      fail-fast: false
+      matrix:
+        # Define all the combinations of OS and architecture you want to build for
+        target:
+          # --- x86_64 (amd64) ---
+          - os: ubuntu-latest
+            arch: x64
+            name: linux-x86_64
+          - os: windows-latest
+            arch: x64
+            name: windows-x86_64
+          - os: macos-latest # This runner is Intel x86_64
+            arch: x64
+            name: macos-x86_64
+
+          # --- ARM64 (aarch64) ---
+          - os: ubuntu-latest   # Emulated on x64 runner
+            arch: arm64
+            name: linux-arm64
+          - os: macos-14        # Native Apple Silicon (M1/M2) runner
+            arch: arm64
+            name: macos-arm64
+          # Note: Windows on ARM is not included as GitHub does not offer native or easily emulated runners for it.
+
+          # --- x86 (32-bit) ---
+          - os: ubuntu-latest   # Emulated on x64 runner
+            arch: x86
+            name: linux-x86
+          - os: windows-latest
+            arch: x86
+            name: windows-x86
+          # Note: 32-bit macOS is obsolete and not supported on modern hardware or runners.
+
+    steps:
+    - name: 1. Check out repository code
+      uses: actions/checkout@v4
+
+    - name: 2. Set up QEMU for emulation (Linux only)
+      # This step is only necessary for non-x64 architectures on Linux runners
+      if: runner.os == 'Linux' && matrix.target.arch != 'x64'
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: linux/arm64,linux/386 # 386 is for x86
+
+    - name: 3. Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        # The 'architecture' input is crucial for selecting the correct Python interpreter
+        architecture: ${{ matrix.target.arch }}
+
+    - name: 4. Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+
+    - name: 5. Build the binary with PyInstaller
+      run: |
+        # The executable name is set here for consistency
+        # On Windows, PyInstaller automatically adds the .exe extension
+        pyinstaller --name ipcalc-${{ matrix.target.name }} --onefile --clean ipcalc.py
+
+    - name: 6. Upload the binary as a build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        # The artifact name will be unique for each build
+        name: ipcalc-${{ matrix.target.name }}
+        # The path to the created binary in the 'dist' folder
+        # We use a wildcard (*) to automatically handle the .exe extension on Windows
+        path: dist/ipcalc-${{ matrix.target.name }}*
