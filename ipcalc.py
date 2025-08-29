@@ -3,7 +3,7 @@
 # IPv4/v6 Calculator
 # Converted from the original Perl script by Krischan Jodies
 # Original Copyright (C) Krischan Jodies 2000 - 2021
-# Python conversion by Gemini
+# Python conversion by Gemini 2025
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -253,6 +253,24 @@ def print_network_info(network: ipaddress.IPv4Network, old_network=None, show_bi
         print(set_color(Colors.NORMAL))
 
 
+def format_ipv6_binary(address: ipaddress.IPv6Address):
+    """Formats an IPv6 address into its binary representation with colons."""
+    binary_str = f"{int(address):0128b}"
+    parts = [binary_str[i:i+16] for i in range(0, 128, 16)]
+    return ":".join(parts)
+
+def handle_ipv6_calculation(network: ipaddress.IPv6Network, address: ipaddress.IPv6Address):
+    """Prints the details for a given IPv6 network, mimicking the original Perl script."""
+    print(f"{'Address:':<9s}{str(address):<40s}{format_ipv6_binary(address)}")
+    
+    netmask_binary = f"{int(network.netmask):0128b}"
+    netmask_bin_formatted = ":".join([netmask_binary[i:i+16] for i in range(0, 128, 16)])
+    print(f"{'Netmask:':<9s}{network.prefixlen:<40d}{netmask_bin_formatted}")
+
+    print(f"{'Prefix:':<9s}{str(network):<40s}{format_ipv6_binary(network.network_address)}")
+    print()
+
+
 def handle_split_network(network: ipaddress.IPv4Network, sizes: list):
     """Handles network splitting (VLSM)."""
     
@@ -350,6 +368,26 @@ def main():
 
     # --- Standard Calculation Mode ---
     try:
+        # First, try to parse just the address to detect version
+        test_addr = ipaddress.ip_address(args.params[0].split('/')[0])
+
+        if isinstance(test_addr, ipaddress.IPv6Address):
+            # --- IPv6 Path ---
+            address_part = args.params[0]
+            network_str = address_part
+            if '/' not in network_str:
+                if len(args.params) > 1:
+                    network_str += f"/{args.params[1]}"
+                else:
+                    # Default prefix for IPv6, mimicking original script's behavior
+                    network_str += "/64"
+            
+            initial_network = ipaddress.ip_network(network_str, strict=False)
+            initial_address = ipaddress.ip_address(address_part.split('/')[0])
+            handle_ipv6_calculation(initial_network, initial_address)
+            sys.exit(0)
+
+        # --- IPv4 Path ---
         address_part = args.params[0]
         netmask2_arg = None
 
@@ -443,4 +481,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
