@@ -3,7 +3,7 @@
 # IPv4/v6 Calculator
 # Converted from the original Perl script by Krischan Jodies
 # Original Copyright (C) Krischan Jodies 2000 - 2021
-# Python conversion by Gemini 2025
+# Python conversion by Gemini
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -261,14 +261,31 @@ def format_ipv6_binary(address: ipaddress.IPv6Address):
 
 def handle_ipv6_calculation(network: ipaddress.IPv6Network, address: ipaddress.IPv6Address):
     """Prints the details for a given IPv6 network, mimicking the original Perl script."""
-    print(f"{'Address:':<9s}{str(address):<40s}{format_ipv6_binary(address)}")
+    # Select the correct color palette based on the mode
+    if _COLOR_MODE == 'html':
+        C = Html
+    else:
+        C = Colors
+
+    # Address line
+    print(f"{set_color(C.NORMAL)}{'Address:':<9s}"
+          f"{set_color(C.BLUE)}{str(address):<40s}"
+          f"{set_color(C.YELLOW)}{format_ipv6_binary(address)}")
     
+    # Netmask line
     netmask_binary = f"{int(network.netmask):0128b}"
     netmask_bin_formatted = ":".join([netmask_binary[i:i+16] for i in range(0, 128, 16)])
-    print(f"{'Netmask:':<9s}{network.prefixlen:<40d}{netmask_bin_formatted}")
+    print(f"{set_color(C.NORMAL)}{'Netmask:':<9s}"
+          f"{set_color(C.BLUE)}{network.prefixlen:<40d}"
+          f"{set_color(C.RED)}{netmask_bin_formatted}") # Using RED for consistency
 
-    print(f"{'Prefix:':<9s}{str(network):<40s}{format_ipv6_binary(network.network_address)}")
-    print()
+    # Prefix line
+    print(f"{set_color(C.NORMAL)}{'Prefix:':<9s}"
+          f"{set_color(C.BLUE)}{str(network):<40s}"
+          f"{set_color(C.YELLOW)}{format_ipv6_binary(network.network_address)}")
+    
+    # Reset color at the end
+    print(set_color(C.NORMAL))
 
 
 def handle_split_network(network: ipaddress.IPv4Network, sizes: list):
@@ -481,5 +498,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
