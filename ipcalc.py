@@ -259,7 +259,7 @@ def format_ipv6_binary(address: ipaddress.IPv6Address):
     parts = [binary_str[i:i+16] for i in range(0, 128, 16)]
     return ":".join(parts)
 
-def handle_ipv6_calculation(network: ipaddress.IPv6Network, address: ipaddress.IPv6Address):
+def handle_ipv6_calculation(network: ipaddress.IPv6Network, address: ipaddress.IPv6Address, show_binary=True):
     """Prints the details for a given IPv6 network, mimicking the original Perl script."""
     # Select the correct color palette based on the mode
     if _COLOR_MODE == 'html':
@@ -268,21 +268,27 @@ def handle_ipv6_calculation(network: ipaddress.IPv6Network, address: ipaddress.I
         C = Colors
 
     # Address line
-    print(f"{set_color(C.NORMAL)}{'Address:':<9s}"
-          f"{set_color(C.BLUE)}{str(address):<40s}"
-          f"{set_color(C.YELLOW)}{format_ipv6_binary(address)}")
+    line = (f"{set_color(C.NORMAL)}{'Address:':<9s}"
+          f"{set_color(C.BLUE)}{str(address):<40s}")
+    if show_binary:
+          line += f"{set_color(C.YELLOW)}{format_ipv6_binary(address)}"
+    print(line)
     
     # Netmask line
-    netmask_binary = f"{int(network.netmask):0128b}"
-    netmask_bin_formatted = ":".join([netmask_binary[i:i+16] for i in range(0, 128, 16)])
-    print(f"{set_color(C.NORMAL)}{'Netmask:':<9s}"
-          f"{set_color(C.BLUE)}{network.prefixlen:<40d}"
-          f"{set_color(C.RED)}{netmask_bin_formatted}") # Using RED for consistency
+    line = (f"{set_color(C.NORMAL)}{'Netmask:':<9s}"
+            f"{set_color(C.BLUE)}{network.prefixlen:<40d}")
+    if show_binary:
+        netmask_binary = f"{int(network.netmask):0128b}"
+        netmask_bin_formatted = ":".join([netmask_binary[i:i+16] for i in range(0, 128, 16)])
+        line += f"{set_color(C.RED)}{netmask_bin_formatted}" # Using RED for consistency
+    print(line)
 
     # Prefix line
-    print(f"{set_color(C.NORMAL)}{'Prefix:':<9s}"
-          f"{set_color(C.BLUE)}{str(network):<40s}"
-          f"{set_color(C.YELLOW)}{format_ipv6_binary(network.network_address)}")
+    line = (f"{set_color(C.NORMAL)}{'Prefix:':<9s}"
+            f"{set_color(C.BLUE)}{str(network):<40s}")
+    if show_binary:
+        line += f"{set_color(C.YELLOW)}{format_ipv6_binary(network.network_address)}"
+    print(line)
     
     # Reset color at the end
     print(set_color(C.NORMAL))
@@ -401,7 +407,7 @@ def main():
             
             initial_network = ipaddress.ip_network(network_str, strict=False)
             initial_address = ipaddress.ip_address(address_part.split('/')[0])
-            handle_ipv6_calculation(initial_network, initial_address)
+            handle_ipv6_calculation(initial_network, initial_address, show_binary=not args.nobinary)
             sys.exit(0)
 
         # --- IPv4 Path ---
@@ -498,6 +504,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
