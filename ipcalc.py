@@ -162,12 +162,13 @@ def print_line(label, addr, network, old_network=None, show_class_bits=False, sh
                     bits_out.append(set_color(c_binary))
 
                 # Delineate netmask sections
-                if not is_netmask and (i == network.prefixlen or (old_network and i == old_network.prefixlen)):
+                if i == network.prefixlen or (old_network and i == old_network.prefixlen):
                      bits_out.append(" ")
-                     if i == network.prefixlen and old_network and network.prefixlen > old_network.prefixlen:
-                         bits_out.append(set_color(c_subnet))
-                     elif old_network and i == old_network.prefixlen:
-                         bits_out.append(set_color(c_binary))
+                     if not is_netmask:
+                         if i == network.prefixlen and old_network and network.prefixlen > old_network.prefixlen:
+                             bits_out.append(set_color(c_subnet))
+                         elif old_network and i == old_network.prefixlen:
+                             bits_out.append(set_color(c_binary))
                 
                 bits_out.append(bit)
                 
@@ -504,6 +505,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
