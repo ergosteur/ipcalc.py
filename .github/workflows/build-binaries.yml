@@ -26,16 +26,16 @@ jobs:
           - os: windows-latest
             arch: x64
             name: windows-x86_64
-          - os: macos-latest # This is an Intel runner
-            arch: x64
-            name: macos-x86_64
+          #- os: macos-latest # This is an Intel runner
+          #  arch: x64
+          #  name: macos-x86_64
 
           # --- ARM64 (aarch64) ---
           # FIX: Pin to Ubuntu 22.04 for stable ARM64 apt repositories
-          - os: ubuntu-22.04
-            arch: arm64
-            name: linux-arm64
-            debian_arch: arm64
+          #- os: ubuntu-22.04
+          #  arch: arm64
+          #  name: linux-arm64
+          #  debian_arch: arm64
           - os: macos-14 # This is an Apple Silicon runner
             arch: arm64
             name: macos-arm64
